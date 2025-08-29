@@ -1,0 +1,1 @@
+// ShellError + formatting (Member E)
