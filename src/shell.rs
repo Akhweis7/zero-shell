@@ -50,7 +50,10 @@ impl Shell {
     }
 
     fn print_prompt(&self) -> Result<(), String> {
-        print!("$ ");
+        // Get the full current directory path
+        let current_dir = self.cwd.to_str().unwrap_or("/");
+        
+        print!("{} $ ", current_dir);
         io::stdout().flush().map_err(|e| e.to_string())
     }
 
@@ -67,6 +70,8 @@ impl Shell {
             }
             "cd" => {
                 builtins::cd::cd(&command.args).map_err(|e| e.to_string())?;
+                // Update the shell's current working directory after successful cd
+                self.cwd = env::current_dir().unwrap_or_else(|_| PathBuf::from("/"));
                 Ok(true)
             }
             "pwd" => {
