@@ -4,11 +4,12 @@ use std::env;
 use std::io;
 use std::path::Path;
 
-fn cd(arg: Option<&str>) -> io::Result<()> {
-    let target = match arg {
-        Some("~") | None => env::var("HOME").unwrap_or("/".to_string()),
-        Some("..") => "..".to_string(),
+pub fn cd(arg: &Vec<String>) -> io::Result<()> {
+    let target = match arg.first() {
+        Some(path) if path == "~" => env::var("HOME").unwrap_or("/".to_string()),
+        Some(path) if path == ".." => "..".to_string(),
         Some(path) => path.to_string(),
+        None => env::var("HOME").unwrap_or("/".to_string()),
     };
 
     let path = Path::new(&target);

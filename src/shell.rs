@@ -65,6 +65,23 @@ impl Shell {
                 builtins::echo::run(&command.args);
                 Ok(true)
             }
+            "cd" => {
+                builtins::cd::cd(&command.args).map_err(|e| e.to_string())?;
+                Ok(true)
+            }
+            "pwd" => {
+                builtins::pwd::pwd().map_err(|e| e.to_string())?;
+                Ok(true)
+            }
+            "mkdir" => {
+                builtins::mkdir::mkdir(&command.args).map_err(|e| e.to_string())?;
+                Ok(true)
+            }
+            "clear" => {
+                builtins::clear::clear().map_err(|e| e.to_string())?;
+                Ok(true)
+            }
+           
             other => {
                 eprintln!("Command '{}' not found", other);
                 Ok(true)
