@@ -1,7 +1,9 @@
 // pwd builtin command (Member B)
 
+use std::env;
+use std::io;
 
-function pwd()-> Result<(), ShellError> {
+pub fn pwd() -> io::Result<()> {
     let path = env::current_dir()?;
     println!("{}", path.display());
     Ok(())
