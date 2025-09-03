@@ -81,7 +81,10 @@ impl Shell {
                 builtins::clear::clear().map_err(|e| e.to_string())?;
                 Ok(true)
             }
-           
+            "tnanm" => {
+                builtins::tnanm::tnanm();
+                Ok(true)
+            }
             other => {
                 eprintln!("Command '{}' not found", other);
                 Ok(true)
