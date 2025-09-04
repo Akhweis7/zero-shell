@@ -5,6 +5,7 @@ use builtins::clear;
 use builtins::tnanm;
 mod builtins;
 mod shell;
+mod error;
 
 fn main() {
     builtins::clear::clear();

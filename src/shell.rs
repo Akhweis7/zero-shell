@@ -2,7 +2,7 @@
 use std::env;
 use std::io::{self, Write};
 use std::path::PathBuf;
-
+use crate::error::{ShellError, ShellResult};
 use crate::builtins;
 
 pub struct Shell {
@@ -19,13 +19,13 @@ impl Shell {
     }
 
     // REPL loop: prints prompt, reads input, handles EOF, ignores blank lines, parses and dispatches commands.
-    pub fn run(&mut self) -> Result<(), String> {
+    pub fn run(&mut self) -> ShellResult<()> {
         let stdin = io::stdin();
         while self.running {
             self.print_prompt()?;
 
             let mut input = String::new();
-            let bytes_read = stdin.read_line(&mut input).map_err(|e| e.to_string())?;
+          let bytes_read = stdin.read_line(&mut input).map_err(|e| ShellError::io("read_line", e))?;
             if bytes_read == 0 {
                 // EOF (Ctrl+D)
                 break;
@@ -39,9 +39,11 @@ impl Shell {
             // parse the command and dispatch it
             match parse_command(input) {
                 None => continue,
-                Some(cmd) => {
-                    if !self.dispatch(cmd)? {
-                        break;
+             Some(cmd) => match self.dispatch(cmd) {
+                    Ok(false) => break,
+                    Ok(true) => {}
+                    Err(err) => {
+                        eprintln!("{}", err);
                     }
                 }
             }
@@ -49,16 +51,16 @@ impl Shell {
         Ok(())
     }
 
-    fn print_prompt(&self) -> Result<(), String> {
+    fn print_prompt(&self) ->  ShellResult<()> {
         // Get the full current directory path
         let current_dir = self.cwd.to_str().unwrap_or("/");
         
         print!("{} $ ", current_dir);
-        io::stdout().flush().map_err(|e| e.to_string())
+        io::stdout().flush().map_err(|e|ShellError::io("flush", e))
     }
 
     // match the command name to the corresponding builtin function
-    fn dispatch(&mut self, command: Command) -> Result<bool, String> {
+    fn dispatch(&mut self, command: Command) ->ShellResult<bool> {
         match command.name.as_str() {
             "exit" => {
                 self.running = false;
@@ -69,21 +71,21 @@ impl Shell {
                 Ok(true)
             }
             "cd" => {
-                builtins::cd::cd(&command.args).map_err(|e| e.to_string())?;
+                builtins::cd::cd(&command.args).map_err(|e| ShellError::io("cd", e))?;
                 // Update the shell's current working directory after successful cd
                 self.cwd = env::current_dir().unwrap_or_else(|_| PathBuf::from("/"));
                 Ok(true)
             }
             "pwd" => {
-                builtins::pwd::pwd().map_err(|e| e.to_string())?;
+                builtins::pwd::pwd().map_err(|e|ShellError::io("pwd", e))?;
                 Ok(true)
             }
             "mkdir" => {
-                builtins::mkdir::mkdir(&command.args).map_err(|e| e.to_string())?;
+                builtins::mkdir::mkdir(&command.args).map_err(|e| ShellError::io("mkdir", e))?;
                 Ok(true)
             }
             "clear" => {
-                builtins::clear::clear().map_err(|e| e.to_string())?;
+                builtins::clear::clear().map_err(|e| ShellError::io("clear", e))?;
                 Ok(true)
             }
             "tnanm" => {
@@ -91,8 +93,7 @@ impl Shell {
                 Ok(true)
             }
             other => {
-                eprintln!("Command '{}' not found", other);
-                Ok(true)
+             Err(ShellError::invalid_command(other.to_string()))
             }
         }
     }
