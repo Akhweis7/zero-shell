@@ -2,6 +2,10 @@
 use std::env;
 use std::io::{self, Write};
 use std::path::PathBuf;
+use crossterm::{
+    event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers},
+    terminal,
+};
 
 use crate::builtins;
 
@@ -20,16 +24,9 @@ impl Shell {
 
     // REPL loop: prints prompt, reads input, handles EOF, ignores blank lines, parses and dispatches commands.
     pub fn run(&mut self) -> Result<(), String> {
-        let stdin = io::stdin();
         while self.running {
-            self.print_prompt()?;
-
-            let mut input = String::new();
-            let bytes_read = stdin.read_line(&mut input).map_err(|e| e.to_string())?;
-            if bytes_read == 0 {
-                // EOF (Ctrl+D)
-                break;
-            }
+            let input_opt = self.read_line_colored().map_err(|e| e.to_string())?;
+            let Some(input) = input_opt else { break };
 
             let input = input.trim();
             if input.is_empty() {
@@ -52,9 +49,73 @@ impl Shell {
     fn print_prompt(&self) -> Result<(), String> {
         // Get the full current directory path
         let current_dir = self.cwd.to_str().unwrap_or("/");
-        
-        print!("{} $ ", current_dir);
+        // print!("{} $ ", current_dir);
+        // Yellow prompt like: PS <cwd>
+        // \x1b[33m = yellow, \x1b[0m = reset
+        print!("\x1b[38;5;226m{}>\x1b[0m ", current_dir);
         io::stdout().flush().map_err(|e| e.to_string())
+    }
+
+    fn read_line_colored(&self) -> io::Result<Option<String>> {
+        let mut stdout = io::stdout();
+        self.print_prompt().map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+
+        terminal::enable_raw_mode()?;
+        let mut buffer = String::new();
+
+        loop {
+            match event::read()? {
+                Event::Key(KeyEvent { kind: KeyEventKind::Press, code, modifiers, .. }) => {
+                    match (code, modifiers) {
+                        (KeyCode::Enter, _) => {
+                            stdout.write_all(b"\r\n")?;
+                            stdout.flush()?;
+                            terminal::disable_raw_mode()?;
+                            return Ok(Some(buffer));
+                        }
+                        // Ctrl+D => EOF
+                        (KeyCode::Char('d'), m) if m.contains(KeyModifiers::CONTROL) => {
+                            terminal::disable_raw_mode()?;
+                            return Ok(None);
+                        }
+                        // Ctrl+C => cancel current line and refresh prompt
+                        (KeyCode::Char('c'), m) if m.contains(KeyModifiers::CONTROL) => {
+                            buffer.clear();
+                            stdout.write_all(b"\r\n")?;
+                            stdout.flush()?;
+                            self.print_prompt().map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+                            continue;
+                        }
+                        (KeyCode::Backspace, _) => {
+                            buffer.pop();
+                        }
+                        (KeyCode::Char(ch), _) => {
+                            buffer.push(ch);
+                        }
+                        (KeyCode::Tab, _) => {
+                            buffer.push('\t');
+                        }
+                        (KeyCode::Left | KeyCode::Right | KeyCode::Up | KeyCode::Down, _) => {
+                            // ignore arrows for now
+                        }
+                        _ => {}
+                    }
+
+                    // Re-render the whole line: move to start, print prompt + colored buffer, clear to end
+                    stdout.write_all(b"\r")?;
+                    let prompt = format!("\x1b[33mPS {}>\x1b[0m ", self.cwd.to_str().unwrap_or("/"));
+                    let colored = colorize_user_input(&buffer);
+                    write!(stdout, "{}{}", prompt, colored)?;
+                    // CSI 0K clear from cursor to end
+                    stdout.write_all(b"\x1b[0K")?;
+                    stdout.flush()?;
+                }
+                Event::Paste(s) => {
+                    buffer.push_str(&s);
+                }
+                _ => {}
+            }
+        }
     }
 
     // match the command name to the corresponding builtin function
@@ -91,11 +152,62 @@ impl Shell {
                 Ok(true)
             }
             other => {
-                eprintln!("Command '{}' not found", other);
+                //eprintln!("Command '{}' not found", other);
+                // Colorize: command (green), any flags (blue), args (cyan)
+                // We don't have flags/args here, so just color the command
+                eprintln!("Command '\x1b[32m{}\x1b[0m' not found", other);
                 Ok(true)
             }
         }
     }
+}
+
+// removed command echo to avoid duplicate lines
+
+fn colorize_user_input(input: &str) -> String {
+    // Tokenize similarly to `tokenize`, but keep spaces as separators in the output
+    let mut parts: Vec<String> = Vec::new();
+    let mut current = String::new();
+    let mut in_quotes = false;
+
+    for ch in input.chars() {
+        match ch {
+            '"' => {
+                in_quotes = !in_quotes;
+                current.push(ch);
+            }
+            ' ' | '\t' if !in_quotes => {
+                if !current.is_empty() {
+                    parts.push(current.clone());
+                    current.clear();
+                }
+                parts.push(String::from(" "));
+            }
+            _ => current.push(ch),
+        }
+    }
+    if !current.is_empty() {
+        parts.push(current);
+    }
+
+    let mut out = String::new();
+    let mut is_first = true;
+    for token in parts {
+        if token == " " {
+            out.push_str(&token);
+            continue;
+        }
+        if is_first {
+            out.push_str(&format!("\x1b[38;5;47m{}\x1b[0m", token));
+            is_first = false;
+        } else if token.starts_with('-') && token.len() > 1 {
+            out.push_str(&format!("\x1b[38;5;133m{}\x1b[0m", token));
+        } else {
+            out.push_str(&format!("\x1b[38;5;75m{}\x1b[0m", token));
+        }
+    }
+
+    out
 }
 
 struct Command {
