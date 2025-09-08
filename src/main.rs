@@ -4,6 +4,7 @@ use std::process;
 use builtins::clear;
 use builtins::tnanm;
 mod builtins;
+mod util;
 mod shell;
 mod error;
 

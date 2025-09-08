@@ -92,6 +92,11 @@ impl Shell {
                 builtins::tnanm::tnanm();
                 Ok(true)
             }
+              "ls" => {
+            builtins::ls::run(&command.args, &command.flags)
+                .map_err(|e| ShellError::io("ls", e))?;
+            Ok(true)
+            }
             other => {
              Err(ShellError::invalid_command(other.to_string()))
             }
