@@ -7,3 +7,7 @@ pub mod mkdir;
 pub mod clear;
 pub mod ls;
 pub mod tnanm;
+pub mod cat;
+pub mod cp;
+pub mod rm;
+pub mod mv;

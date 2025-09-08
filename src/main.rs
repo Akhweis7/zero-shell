@@ -6,6 +6,7 @@ use builtins::tnanm;
 mod builtins;
 mod shell;
 mod error;
+mod util { pub mod path; pub mod perms; pub mod timefmt; }
 
 fn main() {
     builtins::clear::clear();
