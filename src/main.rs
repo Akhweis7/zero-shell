@@ -1,12 +1,12 @@
 //tala
-use std::io::{ self, Write };
+// use std::io::{ self, Write };
 use std::process;
-use builtins::clear;
-use builtins::tnanm;
+// use builtins::clear;
+// use builtins::tnanm;
 mod builtins;
 mod shell;
 mod error;
-mod util { pub mod path; pub mod perms; pub mod timefmt; }
+// mod util { pub mod path; pub mod perms; pub mod timefmt; }
 
 fn main() {
     builtins::clear::clear();

@@ -1,7 +1,7 @@
 use std::fs;
 use std::io;
 use std::path::Path;
-use crate::util::path as pathutil;
+// use crate::util::path as pathutil;
 
 pub fn rm(args: &Vec<String>, flags: &Vec<char>) -> io::Result<()> {
     if args.is_empty() {
@@ -10,7 +10,7 @@ pub fn rm(args: &Vec<String>, flags: &Vec<char>) -> io::Result<()> {
     let recursive = flags.contains(&'r');
 
     for arg in args {
-        let expanded = pathutil::expand_one(arg);
+        let expanded = arg.to_string();
         let p = Path::new(&expanded);
         let meta = fs::symlink_metadata(&p)?;
         if meta.is_dir() {

@@ -1,7 +1,7 @@
 // cat builtin command
 use std::fs::File;
 use std::io::{self, Read, Write};
-use crate::util::path as pathutil;
+// use crate::util::path as pathutil;
 
 pub fn cat(args: &Vec<String>) -> io::Result<()> {
     if args.is_empty() {
@@ -18,7 +18,7 @@ pub fn cat(args: &Vec<String>) -> io::Result<()> {
     }
 
     for arg in args {
-        let expanded = pathutil::expand_one(arg);
+        let expanded = arg.to_string();
         let mut file = File::open(&expanded)?;
         let mut stdout = io::stdout();
         let mut buffer = [0u8; 8192];

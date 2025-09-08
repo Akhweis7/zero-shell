@@ -1,14 +1,14 @@
 use std::fs;
 use std::io::{self, Read, Write};
 use std::path::Path;
-use crate::util::path as pathutil;
+// use crate::util::path as pathutil;
 
 pub fn cp(args: &Vec<String>) -> io::Result<()> {
     if args.len() < 2 {
         return Err(io::Error::new(io::ErrorKind::InvalidInput, "cp: missing file operand"));
     }
-    let src = pathutil::expand_one(&args[0]);
-    let dst = pathutil::expand_one(&args[1]);
+    let src = args[0].to_string();
+    let dst = args[1].to_string();
 
     let src_meta = fs::metadata(&src)?;
     if src_meta.is_dir() {
