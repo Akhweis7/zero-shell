@@ -80,8 +80,24 @@ impl Shell {
                 builtins::pwd::pwd().map_err(|e|ShellError::io("pwd", e))?;
                 Ok(true)
             }
+            "cat" => {
+                builtins::cat::cat(&command.args).map_err(|e| ShellError::io("cat", e))?;
+                Ok(true)
+            }
             "mkdir" => {
                 builtins::mkdir::mkdir(&command.args).map_err(|e| ShellError::io("mkdir", e))?;
+                Ok(true)
+            }
+            "cp" => {
+                builtins::cp::cp(&command.args).map_err(|e| ShellError::io("cp", e))?;
+                Ok(true)
+            }
+            "rm" => {
+                builtins::rm::rm(&command.args, &command.flags).map_err(|e| ShellError::io("rm", e))?;
+                Ok(true)
+            }
+            "mv" => {
+                builtins::mv::mv(&command.args).map_err(|e| ShellError::io("mv", e))?;
                 Ok(true)
             }
             "clear" => {
@@ -90,6 +106,10 @@ impl Shell {
             }
             "tnanm" => {
                 builtins::tnanm::tnanm();
+                Ok(true)
+            }
+            "ls" => {
+                builtins::ls::ls(&command.args, &command.flags).map_err(|e| ShellError::io("ls", e))?;
                 Ok(true)
             }
             other => {
