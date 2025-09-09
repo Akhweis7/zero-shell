@@ -13,7 +13,7 @@ pub fn rm(args: &Vec<String>, flags: &Vec<char>) -> io::Result<()> {
         let p = Path::new(arg);
        let meta = match fs::symlink_metadata(p) { //This function will return an error in the following situations, but is not limited to just these cases: The user lacks permissions to perform metadata call on path. path does not exist.
             Ok(m) => m,
-            Err(e) => return Err(io::Error::new(e.kind(), format!("rm: {}: {}", target, e))),
+            Err(e) => return Err(io::Error::new(e.kind(), format!("rm: {}: {}", arg, e))),
         };
         if meta.is_dir() {
             if !recursive {
