@@ -18,3 +18,4 @@ pub fn cat(arg: &Vec<String>) -> io::Result<()> {
     print!("\x1b[38;5;40m{}\x1b[0m", file_content); // ansi color. \x1b[0m to reset the color
 
     Ok(())
+}
