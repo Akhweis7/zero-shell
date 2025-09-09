@@ -1,7 +1,0 @@
-pwd
-echo hello
-cd ~
-pwd
-ls -aF
-cat Cargo.toml
-exit

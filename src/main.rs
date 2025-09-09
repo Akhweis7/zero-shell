@@ -6,7 +6,7 @@ use std::process;
 mod builtins;
 mod shell;
 mod error;
-mod util;
+// mod util;
 
 fn main() {
     builtins::clear::clear();

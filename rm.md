@@ -1,0 +1,11 @@
+- Differences
+  - Error message on metadata failure:
+    - Current: `rm: <path>: <err>` (uses the actual path).
+    - Old: tries `rm: {}: {}` with `target` (undefined variable) → compile error.
+  - Directory without -r:
+    - Current: `rm: <path>: is a directory`.
+    - Old: `rm: cannot remove directory (use -r)` (more user-friendly wording but less specific).
+  - Both use `symlink_metadata`, so symlinks are unlinked (not followed), and both remove dirs only with `-r`.
+
+- Which is better?
+  - Current is better: it compiles (fixes the `target` bug), reports the exact failing path, and matches typical `rm` behavior. The old message for the non-`-r` case is friendlier, but the undefined `target` makes it broken.

@@ -1,25 +1,29 @@
 use std::fs;
 use std::io;
-use std::path::Path;
-// use crate::util::path as pathutil;
+use std::path::{Path, PathBuf};
 
 pub fn mv(args: &Vec<String>) -> io::Result<()> {
     if args.len() < 2 {
-        return Err(io::Error::new(io::ErrorKind::InvalidInput, "mv: missing file operand"));
+        return Err(io::Error::new(io::ErrorKind::InvalidInput, "mv: missing operand"));
     }
-    let src = args[0].to_string();
-    let dst = args[1].to_string();
 
-    let src_path = Path::new(&src);
-    let dst_path = Path::new(&dst);
+    let sources: Vec<PathBuf> = args[..args.len()-1].iter().map(PathBuf::from).collect();
+    let dest = PathBuf::from(&args[args.len()-1]);
 
-    // If dst is directory, move into it using same file name
-    let dst_final = if dst_path.is_dir() {
-        let name = src_path.file_name().ok_or_else(|| io::Error::new(io::ErrorKind::Other, "mv: invalid source name"))?;
-        dst_path.join(name)
-    } else {
-        dst_path.to_path_buf()
-    };
+    let dest_is_dir = dest.is_dir();
+    if sources.len() > 1 && !dest_is_dir {
+        return Err(io::Error::new(io::ErrorKind::Other, "mv: target is not a directory"));
+    }
 
-    fs::rename(src_path, &dst_final)
+    for src in sources {
+        let target_path = if dest_is_dir {
+            let name = src.file_name().ok_or_else(|| io::Error::new(io::ErrorKind::Other, "mv: invalid source"))?;
+            dest.join(name)
+        } else {
+            dest.clone()
+        };
+        fs::rename(&src, &target_path)?;
+    }
+
+    Ok(())
 }
