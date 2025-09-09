@@ -23,7 +23,7 @@ impl Shell {
         let stdin = io::stdin();
         while self.running {
             self.print_prompt()?;
-
+            // print!("\x1b[38;5;40m{}\x1b[0m", self.print_prompt()?);
             let mut input = String::new();
           let bytes_read = stdin.read_line(&mut input).map_err(|e| ShellError::io("read_line", e))?;
             if bytes_read == 0 {
@@ -43,7 +43,7 @@ impl Shell {
                     Ok(false) => break,
                     Ok(true) => {}
                     Err(err) => {
-                        eprintln!("{}", err);
+                        eprintln!("\x1b[38;5;196m{}\x1b[0m", err);
                     }
                 }
             }
@@ -54,8 +54,8 @@ impl Shell {
     fn print_prompt(&self) ->  ShellResult<()> {
         // Get the full current directory path
         let current_dir = self.cwd.to_str().unwrap_or("/");
-        
-        print!("{} $ ", current_dir);
+        print!("\x1b[38;5;93m{}$ \x1b[0m", current_dir);
+        // print!("{} $ ", current_dir);
         io::stdout().flush().map_err(|e|ShellError::io("flush", e))
     }
 
@@ -109,7 +109,7 @@ impl Shell {
                 Ok(true)
             }
             "ls" => {
-                builtins::ls::ls(&command.args, &command.flags).map_err(|e| ShellError::io("ls", e))?;
+                builtins::ls::run(&command.args, &command.flags).map_err(|e| ShellError::io("ls", e))?;
                 Ok(true)
             }
             other => {

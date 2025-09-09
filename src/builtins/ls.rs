@@ -127,7 +127,7 @@ fn print_name_line(e: &LsEntry, flags: Flags) {
     if flags.classify {
         name.push_str(classify_suffix(e.kind, &e.path, e.meta.as_ref()));
     }
-    println!("{name}");
+    println!("\x1b[38;5;46m{name}\x1b[0m");
 }
 
 #[cfg(unix)]
@@ -175,7 +175,7 @@ fn print_long(e: &LsEntry, flags: Flags) {
     }
 
     println!(
-        "{}{} {:>2} {:>5} {:>5} {:>8} {} {}",
+        "\x1b[38;5;46m{}{} {:>2} {:>5} {:>5} {:>8} {} {}\x1b[0m",
         tchar, perms9, nlink, uid, gid, size, mtime_str, name
     );
 }
@@ -207,7 +207,7 @@ fn list_directory(dir: &Path, flags: Flags) -> i32 {
     let rd = match fs::read_dir(dir) {
         Ok(r) => r,
         Err(err) => {
-            eprintln!("ls: cannot open directory '{}': {}", dir.to_string_lossy(), err);
+            eprintln!("\x1b[38;5;196mls: cannot open directory '{}': {}\x1b[0m", dir.to_string_lossy(), err);
             return 1;
         }
     };
@@ -237,7 +237,7 @@ fn list_directory(dir: &Path, flags: Flags) -> i32 {
             }
             Err(err) => {
                 exit_code = 1;
-                eprintln!("ls: error reading '{}': {}", dir.to_string_lossy(), err);
+                eprintln!("\x1b[38;5;196mls: error reading '{}': {}\x1b[0m", dir.to_string_lossy(), err);
             }
         }
     }
@@ -254,7 +254,7 @@ fn list_single_path(path: &Path, flags: Flags, print_header: bool) -> i32 {
     let meta = match fs::symlink_metadata(path) {
         Ok(m) => m,
         Err(err) => {
-            eprintln!("ls: cannot access '{}': {}", path.to_string_lossy(), err);
+            eprintln!("\x1b[38;5;196mls: cannot access '{}': {}\x1b[0m", path.to_string_lossy(), err);
             return 1;
         }
     };
@@ -262,7 +262,7 @@ fn list_single_path(path: &Path, flags: Flags, print_header: bool) -> i32 {
     let mut exit_code = 0;
     if meta.is_dir() {
         if print_header {
-            println!("{}:", path.to_string_lossy());
+            println!("\x1b[38;5;51m{}:\x1b[0m", path.to_string_lossy());
         }
         exit_code |= list_directory(path, flags);
     } else {

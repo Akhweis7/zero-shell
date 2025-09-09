@@ -6,14 +6,14 @@ use std::process;
 mod builtins;
 mod shell;
 mod error;
-// mod util { pub mod path; pub mod perms; pub mod timefmt; }
+mod util;
 
 fn main() {
     builtins::clear::clear();
     builtins::tnanm::z_shell();
     let mut sh = shell::Shell::new();
     if let Err(err) = sh.run() {
-        eprintln!("{}", err);
+        eprintln!("\x1b[38;5;196m{}\x1b[0m", err);
         process::exit(1);
     }
 }
