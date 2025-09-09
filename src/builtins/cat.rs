@@ -1,32 +1,20 @@
-// cat builtin command
-use std::fs::File;
-use std::io::{self, Read, Write};
-// use crate::util::path as pathutil;
+use std::io::{ self };
+use std::fs;
 
-pub fn cat(args: &Vec<String>) -> io::Result<()> {
-    if args.is_empty() {
-        // Read from stdin and write to stdout
-        let mut stdin = io::stdin();
-        let mut stdout = io::stdout();
-        let mut buffer = [0u8; 8192];
-        loop {
-            let n = stdin.read(&mut buffer)?;
-            if n == 0 { break; }
-            stdout.write_all(&buffer[..n])?;
-        }
-        return Ok(());
+pub fn cat(arg: &Vec<String>) -> io::Result<()> {
+    if arg.len() != 1 {
+        return Err(
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "cat: too many arguments (expect 1 argument)"
+            )
+        );
     }
 
-    for arg in args {
-        let expanded = arg.to_string();
-        let mut file = File::open(&expanded)?;
-        let mut stdout = io::stdout();
-        let mut buffer = [0u8; 8192];
-        loop {
-            let n = file.read(&mut buffer)?;
-            if n == 0 { break; }
-            stdout.write_all(&buffer[..n])?;
-        }
-    }
+    let arg = &arg[0];
+    let path = std::path::PathBuf::from(arg);
+
+    let file_content = fs::read_to_string(path)?;
+    print!("\x1b[38;5;40m{}\x1b[0m", file_content); // ansi color. \x1b[0m to reset the color
+
     Ok(())
-}
