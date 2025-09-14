@@ -10,7 +10,7 @@ Inspired by tools like BusyBox, this project introduces key concepts in Unix sys
 
 ## Project Instructions
 
-You are a system-level developer assigned to build a lightweight, standalone Unix shell for an embedded Linux environment. Your task is to create a shell that handles basic navigation, file manipulation, and process control—faithfully mimicking essential shell behaviors without relying on existing shell utilities.
+*"You are a system-level developer assigned to build a lightweight, standalone Unix shell for an embedded Linux environment. Your task is to create a shell that handles basic navigation, file manipulation, and process control—faithfully mimicking essential shell behaviors without relying on existing shell utilities."* [Read more](https://github.com/01-edu/public/tree/master/subjects/0-shell)
 
 ### Learning Objectives
 
@@ -21,14 +21,14 @@ You are a system-level developer assigned to build a lightweight, standalone Uni
 
 ### Core Requirements
 
-Your minimalist shell must:
+Our minimalist shell:
 
-- Display a prompt (`$ `) and wait for user input
+- Display a prompt (`$`) and wait for user input
 - Parse and execute user commands
 - Return to the prompt only after command execution completes
 - Handle Ctrl+D (EOF) gracefully to exit the shell
 
-You must implement the following commands from scratch, using system-level Rust abstractions:
+We implemented the following commands from scratch, using system-level Rust abstractions:
 
 - `echo`
 - `cd`
@@ -40,34 +40,26 @@ You must implement the following commands from scratch, using system-level Rust 
 - `mv`
 - `mkdir`
 - `exit`
+- `tnanm` - our special command that shows the team names
 
-**Additional constraints:**
+**Additional Features:**
 
-- Do not use any external binaries or system calls that spawn them
-- If a command is unrecognized, print:  
+- We did not use any external binaries or system calls that spawn them
+- If a command is unrecognized, we print:  
   `Command '<name>' not found`
 
 **Constraints:**
 
 - Only basic command syntax is required  
   (No piping `|`, no redirection `>`, no globbing `*`, etc.)
-- Shell behavior should align with Unix conventions
-- Code must follow good coding practices
+- Shell behavior should aligned with Unix conventions (as requested)
+- Code follows good coding practices
 
-### Bonus Features
+### Bonus Features We Implemented
 
-Implementing any of the following will be considered bonus:
-
-- Handle Ctrl+C (SIGINT) without crashing the shell
 - Shell usability enhancements:
-  - Auto-completion
-  - Command history
   - Prompt with current directory (e.g., `~/projects/0-shell $`)
-  - Colorized output for commands, directories, and errors
-  - Command chaining with `;`
-  - Pipes (`|`)
-  - I/O redirection (`>`, `<`)
-  - Support for environment variables (e.g. `$HOME`, `$PATH`)
+  - Colorized output
   - A custom help command documenting built-in functionality
 
 ### Example Usage
@@ -96,10 +88,6 @@ student$
 ## Project Tasks
 
 To see the detailed project tasks and responsibilities, please refer to [tasks.md](tasks.md).
-
-## More Information
-
-For a full project description and requirements, see the [0-shell subject on GitHub](https://github.com/01-edu/public/tree/master/subjects/0-shell).
 
 ---
 
