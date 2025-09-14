@@ -2,11 +2,33 @@
 
 ## Table of Contents
 
-- [Tala Amm — Core engine: REPL, parser, dispatcher](#tala-amm--core-engine-repl-parser-dispatcher)
-- [Amro Khweis — Navigation & lifecycle: cd, pwd, mkdir, exit](#amro-khweis--navigation--lifecycle-cd-pwd-mkdir-exit)
-- [Nadeen Risheq — Listing & metadata: ls with -l, -a, -F](#nadeen-risheq--listing--metadata-ls-with--l--a--f)
-- [Moaz Razem — File content & manipulation: echo, cat, cp, mv, rm (-r)](#moaz-razem--file-content--manipulation-echo-cat-cp-mv-rm--r)
-- [Noor Halabi — Stability, polish & bonuses (signals, prompt, errors, history)](#noor-halabi--stability-polish--bonuses-signals-prompt-errors-history)
+- [Tasks for Building the Shell](#tasks-for-building-the-shell)
+  - [Table of Contents](#table-of-contents)
+  - [Tala Amm — Core engine: REPL, parser, dispatcher](#tala-amm--core-engine-repl-parser-dispatcher)
+    - [What you build](#what-you-build)
+    - [Why this matters](#why-this-matters)
+    - [Edge cases](#edge-cases)
+    - [Tests (quick ideas)](#tests-quick-ideas)
+  - [Amro Khweis — Team Leader, Navigation \& lifecycle: cd, pwd, mkdir, exit](#amro-khweis--team-leader-navigation--lifecycle-cd-pwd-mkdir-exit)
+    - [What you build](#what-you-build-1)
+    - [Why this matters](#why-this-matters-1)
+    - [Edge cases](#edge-cases-1)
+    - [Tests](#tests)
+  - [Nadeen Risheq — Listing \& metadata: ls with -l, -a, -F](#nadeen-risheq--listing--metadata-ls-with--l--a--f)
+    - [What you build](#what-you-build-2)
+    - [Why this matters](#why-this-matters-2)
+    - [Edge cases](#edge-cases-2)
+    - [Tests](#tests-1)
+  - [Moaz Razem — File content \& manipulation: echo, cat, cp, mv, rm (-r)](#moaz-razem--file-content--manipulation-echo-cat-cp-mv-rm--r)
+    - [What you build](#what-you-build-3)
+    - [Why this matters](#why-this-matters-3)
+    - [Edge cases](#edge-cases-3)
+    - [Tests](#tests-2)
+  - [Noor Halabi — Stability, polish \& bonuses (signals, prompt, errors, history)](#noor-halabi--stability-polish--bonuses-signals-prompt-errors-history)
+    - [What you build (core polish)](#what-you-build-core-polish)
+    - [Bonus features (prioritize in this order)](#bonus-features-prioritize-in-this-order)
+    - [Why this matters](#why-this-matters-4)
+    - [Tests](#tests-3)
 
 ## Tala Amm — Core engine: REPL, parser, dispatcher
 
@@ -33,7 +55,7 @@ The shell must execute builtins inside the same process (e.g., `cd` only works t
 
 ---
 
-## Amro Khweis — Navigation & lifecycle: cd, pwd, mkdir, exit
+## Amro Khweis — Team Leader, Navigation & lifecycle: cd, pwd, mkdir, exit
 
 ### What you build
 
